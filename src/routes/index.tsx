@@ -115,7 +115,7 @@ function Dashboard() {
     key: "churnScore",
     dir: "desc",
   });
-  const [selectedId, setSelectedId] = useState<string>(accounts[0].id);
+  const [selectedId, setSelectedId] = useState<string>(accounts[0]?.id ?? "");
 
   const rows = useMemo(() => {
     const q = query.trim().toLowerCase();
