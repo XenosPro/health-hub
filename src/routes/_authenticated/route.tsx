@@ -1,8 +1,8 @@
 import { createFileRoute, Link, Outlet, redirect, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { LayoutDashboard, ListOrdered, Target, UserRound, LogOut, Wallet } from "lucide-react";
+import { LayoutDashboard, ListOrdered, Target, UserRound, LogOut, Wallet, Shield } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useProfile } from "@/lib/finance";
+import { useIsAdmin, useProfile } from "@/lib/finance";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -19,10 +19,12 @@ const nav = [
   { to: "/transactions", label: "Transactions", icon: ListOrdered },
   { to: "/budgets", label: "Budgets & goals", icon: Target },
   { to: "/profile", label: "Profile", icon: UserRound },
-] as const;
+];
 
 function Shell() {
   const { data: profile } = useProfile();
+  const { data: isAdmin } = useIsAdmin();
+  const links = isAdmin ? [...nav, { to: "/admin", label: "Admin", icon: Shield }] : nav;
   const qc = useQueryClient();
   const navigate = useNavigate();
   const signOut = async () => {
@@ -42,10 +44,10 @@ function Shell() {
           Tally
         </div>
         <nav className="mt-8 space-y-1">
-          {nav.map((n) => (
+          {links.map((n) => (
             <Link
               key={n.to}
-              to={n.to}
+              to={n.to as "/dashboard"}
               className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-foreground/75 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
               activeProps={{ className: "bg-sidebar-accent !text-sidebar-accent-foreground" }}
             >
@@ -78,11 +80,11 @@ function Shell() {
         <Outlet />
       </main>
 
-      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t bg-card lg:hidden">
-        {nav.map((n) => (
+      <nav className={`fixed inset-x-0 bottom-0 z-30 grid border-t bg-card lg:hidden ${isAdmin ? "grid-cols-5" : "grid-cols-4"}`}>
+        {links.map((n) => (
           <Link
             key={n.to}
-            to={n.to}
+            to={n.to as "/dashboard"}
             className="flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium text-muted-foreground"
             activeProps={{ className: "!text-primary" }}
           >

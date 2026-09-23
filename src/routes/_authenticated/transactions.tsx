@@ -105,8 +105,7 @@ function TransactionsPage() {
         let amt = iAmt >= 0 ? num(r[iAmt]) : num(r[iCredit]) - num(r[iDebit]);
         if (!date || !amt) return [];
         const merchant = (r[iDesc] ?? "Imported").trim().slice(0, 120) || "Imported";
-        const isIncome = amt > 0 && iAmt >= 0 ? /payroll|salary|deposit|refund|transfer in/i.test(merchant) || amt > 0 && head.includes("type") === false && false : amt > 0;
-        const kind = iAmt >= 0 ? (amt < 0 ? "expense" : isIncome ? "income" : "expense") : amt > 0 ? "income" : "expense";
+        const kind = amt > 0 ? "income" : "expense";
         amt = Math.abs(amt);
         const csvCat = iCat >= 0 ? (r[iCat] ?? "").trim() : "";
         const known = [...CATEGORIES, ...INCOME_CATEGORIES] as readonly string[];
