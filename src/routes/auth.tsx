@@ -53,7 +53,7 @@ function AuthPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const parsed = schema.safeParse({ email, password, name: name || undefined, username: mode === "signup" ? username : undefined });
-    if (!parsed.success) return toast.error(parsed.error.issues[0]?.message);
+    if (!parsed.success) return void toast.error(parsed.error.issues[0]?.message);
     setBusy(true);
     try {
       if (mode === "signup") {

@@ -19,7 +19,7 @@ export const Route = createFileRoute("/_authenticated/budgets")({
   component: BudgetsPage,
 });
 
-const statusCls = { ok: "text-success", near: "text-warning", over: "text-destructive" };
+const statusCls = { ok: "text-good", near: "text-warn", over: "text-destructive" };
 
 function BudgetsPage() {
   const { data: profile } = useProfile();
@@ -36,20 +36,20 @@ function BudgetsPage() {
 
   const delBudget = async (b: Budget) => {
     const { error } = await supabase.from("monthly_budgets").delete().eq("id", b.id);
-    if (error) return toast.error(error.message);
+    if (error) return void toast.error(error.message);
     invalidate("budgets");
   };
   const delGoal = async (g: Goal) => {
     if (!confirm(`Delete goal "${g.name}"?`)) return;
     const { error } = await supabase.from("savings_goals").delete().eq("id", g.id);
-    if (error) return toast.error(error.message);
+    if (error) return void toast.error(error.message);
     invalidate("goals");
   };
   const contribute = async (g: Goal) => {
     const v = Number(prompt(`Add how much to "${g.name}"?`, "50"));
     if (!v || v <= 0) return;
     const { error } = await supabase.from("savings_goals").update({ saved_amount: g.saved_amount + v }).eq("id", g.id);
-    if (error) return toast.error(error.message);
+    if (error) return void toast.error(error.message);
     toast.success(`Added ${formatMoney(v, cur)}`);
     invalidate("goals");
   };
@@ -140,12 +140,12 @@ function BudgetDialog({ open, b, used, onClose }: { open: boolean; b?: Budget; u
   const [amount, setAmount] = useState(b ? String(b.amount) : "");
   const save = async () => {
     const v = Number(amount);
-    if (!(v >= 0) || !amount) return toast.error("Enter a valid amount");
+    if (!(v >= 0) || !amount) return void toast.error("Enter a valid amount");
     const { data: u } = await supabase.auth.getUser();
     const { error } = b
       ? await supabase.from("monthly_budgets").update({ amount: v, category }).eq("id", b.id)
       : await supabase.from("monthly_budgets").insert({ user_id: u.user!.id, category, amount: v });
-    if (error) return toast.error(error.message.includes("unique") ? "That category already has a budget" : error.message);
+    if (error) return void toast.error(error.message.includes("unique") ? "That category already has a budget" : error.message);
     toast.success("Budget saved");
     invalidate("budgets");
     onClose();
@@ -181,15 +181,15 @@ function GoalDialog({ open, g, onClose }: { open: boolean; g?: Goal; onClose: ()
   const [deadline, setDeadline] = useState(g?.deadline ?? "");
   const save = async () => {
     const t = Number(target), s = Number(saved);
-    if (!name.trim() || name.length > 80) return toast.error("Give the goal a name");
-    if (!(t > 0)) return toast.error("Target must be greater than 0");
-    if (!(s >= 0)) return toast.error("Saved amount can't be negative");
+    if (!name.trim() || name.length > 80) return void toast.error("Give the goal a name");
+    if (!(t > 0)) return void toast.error("Target must be greater than 0");
+    if (!(s >= 0)) return void toast.error("Saved amount can't be negative");
     const row = { name: name.trim(), target_amount: t, saved_amount: s, deadline: deadline || null };
     const { data: u } = await supabase.auth.getUser();
     const { error } = g
       ? await supabase.from("savings_goals").update(row).eq("id", g.id)
       : await supabase.from("savings_goals").insert({ ...row, user_id: u.user!.id });
-    if (error) return toast.error(error.message);
+    if (error) return void toast.error(error.message);
     toast.success("Goal saved");
     invalidate("goals");
     onClose();

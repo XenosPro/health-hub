@@ -82,7 +82,7 @@ function TransactionsPage() {
   const remove = async (t: Transaction) => {
     if (!confirm(`Delete "${t.merchant}"?`)) return;
     const { error } = await supabase.from("transactions").delete().eq("id", t.id);
-    if (error) return toast.error(error.message);
+    if (error) return void toast.error(error.message);
     if (t.receipt_path) await supabase.storage.from("receipts").remove([t.receipt_path]);
     toast.success("Transaction deleted");
     invalidate("transactions");
@@ -126,7 +126,7 @@ function TransactionsPage() {
   };
 
   const scanReceipt = async (file: File) => {
-    if (file.size > 10 * 1024 * 1024) return toast.error("Receipt must be under 10MB");
+    if (file.size > 10 * 1024 * 1024) return void toast.error("Receipt must be under 10MB");
     setBusy("receipt");
     try {
       const dataUrl = await new Promise<string>((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result as string); r.onerror = rej; r.readAsDataURL(file); });
@@ -195,14 +195,14 @@ function TransactionsPage() {
           <ul className="divide-y">
             {filtered.map((t) => (
               <li key={t.id} className="group flex items-center gap-3 px-4 py-3">
-                <span className="size-2.5 shrink-0 rounded-full" style={{ background: CATEGORY_COLORS[t.category] ?? "var(--success)" }} />
+                <span className="size-2.5 shrink-0 rounded-full" style={{ background: CATEGORY_COLORS[t.category] ?? "var(--good)" }} />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">{t.merchant}</p>
                   <p className="truncate text-xs text-muted-foreground">
                     {t.occurred_on} · {t.category}{t.source !== "manual" && ` · ${t.source}`}{t.note && ` · ${t.note}`}
                   </p>
                 </div>
-                <span className={`font-mono text-sm ${t.type === "income" ? "text-success" : ""}`}>{t.type === "income" ? "+" : "−"}{formatMoney(t.amount, cur)}</span>
+                <span className={`font-mono text-sm ${t.type === "income" ? "text-good" : ""}`}>{t.type === "income" ? "+" : "−"}{formatMoney(t.amount, cur)}</span>
                 <button aria-label="Edit" onClick={() => setDialog({ open: true, editing: t })} className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"><Pencil className="size-4" /></button>
                 <button aria-label="Delete" onClick={() => remove(t)} className="rounded-md p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"><Trash2 className="size-4" /></button>
               </li>

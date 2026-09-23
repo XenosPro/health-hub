@@ -38,26 +38,26 @@ function ProfilePage() {
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
     const p = schema.safeParse(f);
-    if (!p.success) return toast.error(p.error.issues[0]?.message);
+    if (!p.success) return void toast.error(p.error.issues[0]?.message);
     const { error } = await supabase.from("profiles").update(p.data).eq("id", profile!.id);
-    if (error) return toast.error(error.message.includes("username") ? "That username is taken" : error.message);
+    if (error) return void toast.error(error.message.includes("username") ? "That username is taken" : error.message);
     toast.success("Profile updated");
     invalidate("profile");
   };
 
   const addAccount = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!acc.name.trim()) return toast.error("Name the account");
+    if (!acc.name.trim()) return void toast.error("Name the account");
     const { error } = await supabase.from("accounts").insert({
       user_id: profile!.id, name: acc.name.trim().slice(0, 60), kind: acc.kind, institution: acc.institution.trim().slice(0, 60), balance: Number(acc.balance) || 0,
     });
-    if (error) return toast.error(error.message);
+    if (error) return void toast.error(error.message);
     setAcc({ name: "", kind: "checking", institution: "", balance: "" });
     invalidate("accounts");
   };
   const delAccount = async (id: string) => {
     const { error } = await supabase.from("accounts").delete().eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) return void toast.error(error.message);
     invalidate("accounts");
   };
 

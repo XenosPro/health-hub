@@ -14,7 +14,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
 });
 
-const toneCls = { good: "border-success/30 bg-success/10", warn: "border-warning/40 bg-warning/10", bad: "border-destructive/30 bg-destructive/10", info: "border-border bg-muted/50" };
+const toneCls = { good: "border-good/30 bg-good/10", warn: "border-warn/40 bg-warn/10", bad: "border-destructive/30 bg-destructive/10", info: "border-border bg-muted/50" };
 
 function Dashboard() {
   const { data: profile } = useProfile();
@@ -75,7 +75,7 @@ function Dashboard() {
         <div className="space-y-2">
           {warnings.map((w) => (
             <div key={w.id} className={`flex items-center gap-3 rounded-xl border p-3 text-sm ${w.status === "over" ? toneCls.bad : toneCls.warn}`}>
-              <AlertTriangle className={`size-4 shrink-0 ${w.status === "over" ? "text-destructive" : "text-warning"}`} />
+              <AlertTriangle className={`size-4 shrink-0 ${w.status === "over" ? "text-destructive" : "text-warn"}`} />
               <span>
                 <strong>{w.category}</strong>{" "}
                 {w.status === "over"
@@ -152,12 +152,12 @@ function Dashboard() {
           <ul className="mt-3 divide-y">
             {txs.slice(0, 6).map((t) => (
               <li key={t.id} className="flex items-center gap-3 py-2.5">
-                <span className="size-2.5 shrink-0 rounded-full" style={{ background: CATEGORY_COLORS[t.category] ?? "var(--success)" }} />
+                <span className="size-2.5 shrink-0 rounded-full" style={{ background: CATEGORY_COLORS[t.category] ?? "var(--good)" }} />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">{t.merchant}</p>
                   <p className="text-xs text-muted-foreground">{t.category} · {t.occurred_on}</p>
                 </div>
-                <span className={`font-mono text-sm ${t.type === "income" ? "text-success" : ""}`}>{t.type === "income" ? "+" : "−"}{formatMoney(t.amount, cur)}</span>
+                <span className={`font-mono text-sm ${t.type === "income" ? "text-good" : ""}`}>{t.type === "income" ? "+" : "−"}{formatMoney(t.amount, cur)}</span>
               </li>
             ))}
           </ul>
