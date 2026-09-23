@@ -27,6 +27,7 @@ const schema = z.object({
   email: z.string().trim().email("Enter a valid email").max(255),
   password: z.string().min(8, "At least 8 characters").max(72),
   name: z.string().trim().max(80).optional(),
+  username: z.string().trim().regex(/^[a-zA-Z0-9_]{3,24}$/, "Username: 3–24 letters, numbers or _").optional(),
 });
 
 function AuthPage() {
@@ -35,6 +36,7 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState(false);
 
@@ -50,15 +52,17 @@ function AuthPage() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const parsed = schema.safeParse({ email, password, name: name || undefined });
+    const parsed = schema.safeParse({ email, password, name: name || undefined, username: mode === "signup" ? username : undefined });
     if (!parsed.success) return toast.error(parsed.error.issues[0]?.message);
     setBusy(true);
     try {
       if (mode === "signup") {
+        const { data: free } = await supabase.rpc("username_available", { _username: parsed.data.username! });
+        if (!free) throw new Error("That username is taken");
         const { data, error } = await supabase.auth.signUp({
           email: parsed.data.email,
           password: parsed.data.password,
-          options: { emailRedirectTo: window.location.origin + "/dashboard", data: { display_name: parsed.data.name } },
+          options: { emailRedirectTo: window.location.origin + "/dashboard", data: { display_name: parsed.data.name, username: parsed.data.username } },
         });
         if (error) throw error;
         if (!data.session) setSent(true);
@@ -126,6 +130,12 @@ function AuthPage() {
                   <div className="space-y-1.5">
                     <Label htmlFor="name">Your name</Label>
                     <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Alex Morgan" />
+                  </div>
+                )}
+                {mode === "signup" && (
+                  <div className="space-y-1.5">
+                    <Label htmlFor="username">Username</Label>
+                    <Input id="username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="alex_m" autoComplete="username" />
                   </div>
                 )}
                 <div className="space-y-1.5">

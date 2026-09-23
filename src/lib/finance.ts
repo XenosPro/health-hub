@@ -54,6 +54,38 @@ export interface Profile {
   display_name: string;
   currency: string;
   monthly_income: number;
+  username: string | null;
+  role: "user" | "admin";
+}
+export interface Account {
+  id: string;
+  name: string;
+  kind: string;
+  institution: string;
+  balance: number;
+}
+
+export function useAccounts() {
+  return useQuery({
+    queryKey: ["accounts"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("accounts").select("id,name,kind,institution,balance").order("created_at");
+      if (error) throw error;
+      return (data ?? []).map((a) => ({ ...a, balance: Number(a.balance) })) as Account[];
+    },
+  });
+}
+
+export function useIsAdmin() {
+  return useQuery({
+    queryKey: ["is-admin"],
+    queryFn: async () => {
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) return false;
+      const { data } = await supabase.rpc("has_role", { _user_id: u.user.id, _role: "admin" });
+      return !!data;
+    },
+  });
 }
 
 export function useCurrentUser() {
