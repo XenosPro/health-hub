@@ -99,7 +99,7 @@ export function useBudgets() {
   return useQuery({
     queryKey: ["budgets"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("budgets").select("id,category,amount").order("category");
+      const { data, error } = await supabase.from("monthly_budgets").select("id,category,amount").order("category");
       if (error) throw error;
       return (data ?? []).map((b) => ({ ...b, amount: Number(b.amount) })) as Budget[];
     },
