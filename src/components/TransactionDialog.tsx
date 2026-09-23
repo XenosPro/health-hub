@@ -46,8 +46,8 @@ export function TransactionDialog({
 }: {
   open: boolean;
   onOpenChange: (o: boolean) => void;
-  editing?: Transaction | null;
-  initial?: TxDraft | null;
+  editing?: Transaction | null | undefined;
+  initial?: TxDraft | null | undefined;
 }) {
   const invalidate = useInvalidate();
   const [d, setD] = useState<TxDraft>(emptyDraft());
@@ -71,7 +71,7 @@ export function TransactionDialog({
 
   const save = async () => {
     const p = schema.safeParse(d);
-    if (!p.success) return toast.error(p.error.issues[0]?.message);
+    if (!p.success) return void toast.error(p.error.issues[0]?.message);
     setBusy(true);
     const payload = { ...p.data, note: p.data.note || null };
     const { data: u } = await supabase.auth.getUser();
@@ -84,7 +84,7 @@ export function TransactionDialog({
           receipt_path: d.receipt_path ?? null,
         });
     setBusy(false);
-    if (res.error) return toast.error(res.error.message);
+    if (res.error) return void toast.error(res.error.message);
     toast.success(editing ? "Transaction updated" : "Transaction added");
     await invalidate("transactions");
     onOpenChange(false);
