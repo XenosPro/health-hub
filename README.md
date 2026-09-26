@@ -1,24 +1,48 @@
-# Health Hub
+# Tally — Budget & Expense Tracker
 
-"Build a modern customer health dashboard with an interactive table showing user churn scores, renewal dates, and visual filters."
+A full-stack personal finance application for tracking income, expenses, budgets and savings goals.
 
-This project was built with [Lovable](https://lovable.dev).
+## Features
 
-## Build with Lovable
+- User authentication with Supabase
+- Dashboard with income, spending, remaining balance and savings progress
+- Transaction creation, editing, deletion and search
+- Monthly budget tracking with progress and overspending warnings
+- Savings goals
+- CSV transaction import
+- Receipt upload with AI-assisted extraction of merchant, amount, date, category and notes
+- Admin overview tools
+- Responsive React interface with charts and financial insights
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/4a691729-99d6-4a10-b9bc-e4aa3c1e5815).
+## Tech stack
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+- React + TypeScript
+- TanStack Router
+- Supabase
+- Recharts
+- Lovable AI gateway / Gemini-powered receipt extraction
+- Vite
 
 ## Development
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+Install dependencies:
 
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+```bash
+npm install
+```
+
+Start the development server:
+
+```bash
 npm run dev
 ```
+
+Create your own local environment file and add the required Supabase / application credentials. Environment files are intentionally excluded from Git.
+
+## Security
+
+Never commit API keys or production credentials. Use local environment variables and deployment-platform secrets instead.
+
+## Status
+
+Active portfolio project. The repository name is currently `health-hub`; the application itself is branded **Tally**.
